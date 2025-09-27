@@ -21,7 +21,7 @@ export default function Page() {
   }, [userId]);
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-green-50 via-blue-50 to-white p-8 flex flex-col items-center">
+  <div className="min-h-screen w-full bg-gradient-to-br from-green-50 via-blue-50 to-white pt-16 md:pt-20 lg:pt-24 pb-8 px-8 flex flex-col items-center">
       <h1 className="text-3xl font-bold mb-8 text-center text-green-900 drop-shadow">Meal History</h1>
       <div className="w-full max-w-3xl overflow-x-auto">
         <table className="min-w-full bg-white border rounded shadow-lg">
