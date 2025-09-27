@@ -14,8 +14,20 @@ class MealIn(BaseModel):
     ingredients: List[Ingredient] 
     date: str # string of datetime
 
+class Emissions(BaseModel):
+    low: float
+    high: float
+
+class IngredientsEmissions(BaseModel): 
+    name: str # name of ingredient
+    quantity: str # quantity "ex. 1 cup, 2, 300g"
+    emissions: Emissions
+
+class MealTableIn(MealIn):
+    ingredientsEmissions: List[IngredientsEmissions]
+
 # meal output for post
-class MealOut(MealIn):
+class MealOut(MealTableIn):
     """Schema for a meal after it has been saved (includes IDs)."""
     meal_id: str
     user_id: str

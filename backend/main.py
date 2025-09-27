@@ -7,7 +7,7 @@ import os
 import json
 from google import genai
 import re
-from interface import MealIn, MealOut
+from interface import MealIn, MealOut, IngredientsEmissions, MealTableIn
 
 
 load_dotenv()
@@ -73,7 +73,7 @@ async def get_history(user_id: str):
 
 # GET /emissions: Get carbon emission range based on ingredients and quantity
 @app.get("/emissions")
-async def get_emissions(meal: MealOut):
+async def get_emissions(meal: MealIn):
     print("getting emissions")
     """Get carbon emission range [low, high] using Gemini based on ingredients and quantity."""
     # TODO: Implement logic using Gemini
@@ -137,7 +137,6 @@ async def get_emissions(meal: MealOut):
             "emissions": emissions
         }
         results.append(ingredient_result)
-
     # Return list of ingredients with emissions
     return results
 
@@ -151,11 +150,11 @@ async def create_session():
 
 # POST /meal: Log a meal for a user
 @app.post("/users/{user_id}/meals", response_model=MealOut, status_code=201)
-def log_meal_for_user(user_id: str, meal: MealIn):
+def log_meal_for_user(user_id: str, meal: MealTableIn):
     meal_data = meal.model_dump()
     meal_document = {
         "user_id": user_id,
-        **meal_data 
+        ** meal_data
     }
 
     try:
@@ -166,7 +165,7 @@ def log_meal_for_user(user_id: str, meal: MealIn):
     new_meal_id = str(result.inserted_id)
 
     return MealOut(
-        meal_id=new_meal_id,
         user_id=user_id,
-        **meal_data 
+        meal_id=new_meal_id,
+        **meal_data
     )
