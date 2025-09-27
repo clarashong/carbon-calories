@@ -14,7 +14,16 @@ export default function LogMealPage() {
   const router = useRouter();
 
   return (
-    <main className="relative min-h-screen flex flex-col items-center justify-center w-full overflow-hidden py-10">
+    <main
+      className="relative min-h-screen flex flex-col items-center justify-center w-full overflow-hidden py-10 bg-[#d5dcd2]"
+      style={{
+        backgroundImage: "url('/field.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat"
+      }}
+    >
+      <div className="absolute inset-0 w-full h-full bg-white bg-opacity-60 -z-10" />
       {/* Blue sky background */}
       <div className="fixed inset-0 w-full h-full -z-10">
         <svg
@@ -38,12 +47,12 @@ export default function LogMealPage() {
           <path d="M0,800 Q480,750 960,800 T1440,800 V900 H0 Z" fill="#6fd37e" />
         </svg>
       </div>
-      <div className="bg-white bg-opacity-80 rounded-xl shadow-lg p-8 w-full max-w-md flex flex-col gap-8 z-10">
-        <h1 className="text-3xl font-bold text-blue-700 text-center mb-2">Log a Meal</h1>
+      <div className="bg-[#f5f5f0] bg-opacity-90 rounded-xl shadow-lg drop-shadow-[0_8px_32px_rgba(123,86,36,0.35)] p-8 w-full max-w-md flex flex-col gap-8 z-10">
+        <h1 className="text-3xl font-bold text-[#4B2E09] text-center mb-2">Log a Meal</h1>
         <form className="flex flex-col gap-4">
-          <label className="text-blue-800 font-semibold">New Meal Name</label>
+          <label className="text-[#4B2E09] font-semibold">New Meal Name</label>
           <input
-            className="rounded-lg border border-blue-200 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300 text-blue-900 bg-blue-50"
+            className="rounded-lg border border-[#d5dcd2] px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#7da63a] text-[#4B2E09] bg-[#e9ede5]"
             type="text"
             placeholder="e.g. Avocado Toast"
             value={mealName}
@@ -51,7 +60,7 @@ export default function LogMealPage() {
           />
           <button
             type="button"
-            className="mt-2 bg-blue-400 hover:bg-blue-500 text-white font-semibold py-2 rounded-lg transition"
+            className="mt-2 bg-[#7da63a] hover:bg-[#5c7c2b] text-white font-semibold py-2 rounded-lg transition"
             onClick={() => {
               router.push("/addIngredients");
             }}
@@ -61,12 +70,12 @@ export default function LogMealPage() {
           </button>
         </form>
         <div className="flex flex-col gap-2 mt-4">
-          <span className="text-blue-800 font-semibold mb-1">Or re-use a saved meal:</span>
+          <span className="text-[#4B2E09] font-semibold mb-1">Or re-use a saved meal:</span>
           <div className="flex flex-col gap-2">
             {savedMeals.map(meal => (
               <button
                 key={meal.id}
-                className={`bg-blue-200 hover:bg-blue-300 text-blue-900 font-medium rounded-lg px-4 py-2 transition border-2 ${selectedMeal === meal.id ? 'border-blue-600' : 'border-transparent'}`}
+                className={`bg-[#e9ede5] hover:bg-[#d5dcd2] text-[#4B2E09] font-medium rounded-lg px-4 py-2 transition border-2 ${selectedMeal === meal.id ? 'border-[#7da63a]' : 'border-transparent'}`}
                 onClick={() => {
                   setSelectedMeal(meal.id);
                   alert(`Meal selected: ${meal.name}`);
