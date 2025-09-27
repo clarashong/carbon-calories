@@ -25,7 +25,15 @@ export default function AddIngredientsPage() {
   };
 
   return (
-    <main className="relative min-h-screen flex flex-col items-center justify-center w-full overflow-hidden py-10">
+    <main
+      className="relative min-h-screen flex flex-col items-center justify-center w-full overflow-hidden py-10 bg-[#d5dcd2]"
+      style={{
+        backgroundImage: "url('/field.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat"
+      }}
+    >
       {/* Blue sky and green hills background */}
       <div className="fixed inset-0 w-full h-full -z-10">
         <svg
@@ -48,39 +56,39 @@ export default function AddIngredientsPage() {
           <path d="M0,800 Q480,750 960,800 T1440,800 V900 H0 Z" fill="#6fd37e" />
         </svg>
       </div>
-      <div className="bg-white bg-opacity-90 rounded-xl shadow-lg p-8 w-full max-w-md flex flex-col gap-8 z-10">
-        <h1 className="text-2xl font-bold text-blue-700 text-center mb-2">Add Ingredients</h1>
+      <div className="bg-[#f5f5f0] bg-opacity-90 rounded-xl shadow-lg drop-shadow-[0_8px_32px_rgba(123,86,36,0.35)] p-8 w-full max-w-md flex flex-col gap-8 z-10">
+        <h1 className="text-2xl font-bold text-[#4B2E09] text-center mb-2">Add Ingredients</h1>
         <div className="flex gap-2 mb-4">
           <input
-            className="border rounded px-2 py-1 flex-1 text-blue-900"
+            className="border rounded px-2 py-1 flex-1 text-[#4B2E09] border-[#d5dcd2] bg-[#e9ede5]"
             placeholder="Ingredient"
             value={ingredient}
             onChange={e => setIngredient(e.target.value)}
           />
           <input
-            className="border rounded px-2 py-1 w-24 text-blue-900"
+            className="border rounded px-2 py-1 w-24 text-[#4B2E09] border-[#d5dcd2] bg-[#e9ede5]"
             placeholder="Quantity"
             value={quantity}
             onChange={e => setQuantity(e.target.value)}
           />
           <button
-            className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+            className="bg-[#7da63a] text-white px-3 py-1 rounded hover:bg-[#5c7c2b]"
             onClick={handleAdd}
             type="button"
           >
             Add
           </button>
         </div>
-        <h2 className="text-lg font-semibold text-blue-900 mb-2">Current Ingredients</h2>
+  <h2 className="text-lg font-semibold text-[#4B2E09] mb-2">Current Ingredients</h2>
         <ul className="mb-4">
           {ingredients.map((ing, idx) => (
-            <li key={idx} className="flex justify-between items-center py-1 border-b last:border-b-0 text-blue-900 font-medium">
+            <li key={idx} className="flex justify-between items-center py-1 border-b last:border-b-0 text-[#4B2E09] font-medium">
               <span>{ing.name} ({ing.quantity})</span>
             </li>
           ))}
         </ul>
         <button
-          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:opacity-50"
+          className="bg-[#7da63a] text-white px-4 py-2 rounded hover:bg-[#5c7c2b] disabled:opacity-50"
           onClick={handleNext}
           disabled={ingredients.length === 0}
         >

@@ -79,7 +79,15 @@ export default function MealResultsPage() {
 	}
 
 	return (
-		<main className="relative min-h-screen flex flex-col items-center justify-center w-full overflow-hidden py-10">
+				<main
+					className="relative min-h-screen flex flex-col items-center justify-center w-full overflow-hidden py-10 pt-20 bg-[#d5dcd2]"
+				style={{
+					backgroundImage: "url('/field.png')",
+					backgroundSize: "cover",
+					backgroundPosition: "center",
+					backgroundRepeat: "no-repeat"
+				}}
+			>
 			{/* Back arrow button */}
 			<button
 				className="absolute top-6 left-6 flex items-center text-blue-700 hover:text-blue-900 bg-white bg-opacity-80 rounded-full p-2 shadow"
@@ -141,16 +149,16 @@ export default function MealResultsPage() {
 					/>
 				</svg>
 			</div>
-			<div className="bg-white bg-opacity-90 rounded-xl shadow-lg p-8 w-full max-w-2xl flex flex-col gap-8 z-10">
-				<h1 className="text-3xl font-bold text-blue-700 text-center mb-2">
-					{mealName ? mealName : "Meal Carbon Emissions"}
-				</h1>
+					<div className="bg-[#f5f5f0] bg-opacity-90 rounded-xl shadow-lg drop-shadow-[0_8px_32px_rgba(123,86,36,0.35)] p-8 w-full max-w-2xl flex flex-col gap-8 z-10">
+						<h1 className="text-3xl font-bold text-[#4B2E09] text-center mb-2">
+							{mealName ? mealName : "Meal Carbon Emissions"}
+						</h1>
 				{/* Per-ingredient section */}
-				<section>
-					<h2 className="text-xl font-semibold text-blue-800 mb-2">
-						Per-Ingredient Breakdown
-					</h2>
-					<table className="w-full text-blue-900 mb-4">
+						<section>
+							<h2 className="text-xl font-semibold text-[#4B2E09] mb-2">
+								Per-Ingredient Breakdown
+							</h2>
+							<table className="w-full text-[#4B2E09] mb-4">
 						<thead>
 							<tr className="border-b">
 								<th className="text-left py-1">Ingredient</th>
@@ -174,39 +182,39 @@ export default function MealResultsPage() {
 					</table>
 				</section>
 				{/* Total meal section with traffic light */}
-				<section className="flex flex-col items-center mb-4">
-					<h2 className="text-xl font-semibold text-blue-800 mb-2">
-						Total Meal Emissions
-					</h2>
-					<div className="flex flex-col items-center gap-2">
-						<div className="text-3xl font-bold text-green-700">
-							{totalCarbon.toFixed(2)} kg CO₂
-						</div>
-						{/* Meal traffic light */}
-						<MealTrafficLight value={totalCarbon} />
-					</div>
-				</section>
-				{/* Comparisons section */}
-				<section>
-					<h2 className="text-xl font-semibold text-blue-800 mb-2">
-						Comparisons
-					</h2>
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-						{comparisons.map((item, idx) => (
-							<div
-								key={idx}
-								className="bg-blue-100 rounded-lg p-4 flex flex-col items-center shadow"
-							>
-								<div className="font-semibold text-blue-900 mb-1">
-									{item.name}
+						<section className="flex flex-col items-center mb-4">
+							<h2 className="text-xl font-semibold text-[#4B2E09] mb-2">
+								Total Meal Emissions
+							</h2>
+							<div className="flex flex-col items-center gap-2">
+								<div className="text-3xl font-bold text-[#7da63a]">
+									{totalCarbon.toFixed(2)} kg CO₂
 								</div>
-								<div className="text-lg text-green-700 font-bold">
-									{item.carbon.toFixed(2)} kg CO₂
-								</div>
+								{/* Meal traffic light */}
+								<MealTrafficLight value={totalCarbon} />
 							</div>
-						))}
-					</div>
-				</section>
+						</section>
+				{/* Comparisons section */}
+						<section>
+							<h2 className="text-xl font-semibold text-[#4B2E09] mb-2">
+								Comparisons
+							</h2>
+							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+								{comparisons.map((item, idx) => (
+									<div
+										key={idx}
+										className="bg-[#e9ede5] rounded-lg p-4 flex flex-col items-center shadow"
+									>
+										<div className="font-semibold text-[#4B2E09] mb-1">
+											{item.name}
+										</div>
+										<div className="text-lg text-[#7da63a] font-bold">
+											{item.carbon.toFixed(2)} kg CO₂
+										</div>
+									</div>
+								))}
+							</div>
+						</section>
 			</div>
 		</main>
 	);
