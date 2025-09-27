@@ -73,7 +73,7 @@ async def get_history(user_id: str):
 
 # GET /emissions: Get carbon emission range based on ingredients and quantity
 @app.get("/emissions")
-async def get_emissions():
+async def get_emissions(meal: MealOut):
     print("getting emissions")
     """Get carbon emission range [low, high] using Gemini based on ingredients and quantity."""
     # TODO: Implement logic using Gemini
@@ -87,11 +87,7 @@ async def get_emissions():
     client = genai.Client(api_key=api_key)
 
     # Local variable: ingredient list
-    ingredients = [
-        {"name": "apple", "quantity": "1"},
-        {"name": "rice", "quantity": "200g"},
-        {"name": "beef", "quantity": "100g"}  
-    ]
+    ingredients = meal.model_dump().get("ingredients")
 
     results = []
 
