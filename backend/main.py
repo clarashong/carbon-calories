@@ -1,6 +1,5 @@
-from fastapi import FastAPI, Header, HTTPException
+from fastapi import FastAPI, Header, HTTPException, Depends
 from pymongo import MongoClient
-from pymongo.server_api import ServerApi
 import certifi
 from dotenv import load_dotenv
 import os
@@ -8,15 +7,16 @@ import json
 from google import genai
 import re
 from interface import MealIn, MealOut, IngredientsEmissions, MealTableIn
-
+import client # import the MongoDB client
+import auth
+from auth_token import get_current_user
 
 load_dotenv()
 MONGODB_URI = os.getenv("MONGO_DB_URI")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "your_gemini_api_key_here")
 
-
 # MongoDB client setup (sensible defaults)
-mongo_client = MongoClient(MONGODB_URI, tlsCAFile=certifi.where())
+mongo_client = client.mongo_client
 db = mongo_client["carbon_calories"]
 meals_collection  = db["carbon-calories"]["meals"]
 
@@ -27,6 +27,7 @@ except Exception as e:
     print(e)
 
 app = FastAPI()
+app.include_router(auth.router) # add the router for auth 
 
 @app.get("/")
 async def root():

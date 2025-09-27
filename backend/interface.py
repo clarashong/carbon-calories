@@ -32,3 +32,6 @@ class MealOut(MealTableIn):
     meal_id: str
     user_id: str
 
+class User(BaseModel):
+    username: str
+    password: str
