@@ -27,25 +27,26 @@ export default function HomePage() {
           </svg>
           <svg width="110" height="110" viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg" className="mb-4 ml-4 relative z-10">
             {/* Sun rays - deterministic rendering */}
-            {Array.from({ length: 12 }).map((_, i) => {
-              const angle = (i * 30) * (Math.PI / 180);
-              const x1 = 55 + Math.cos(angle) * 55;
-              const y1 = 55 + Math.sin(angle) * 55;
-              const x2 = 55 + Math.cos(angle) * 70;
-              const y2 = 55 + Math.sin(angle) * 70;
-              return (
-                <line
-                  key={i}
-                  x1={x1}
-                  y1={y1}
-                  x2={x2}
-                  y2={y2}
-                  stroke="#ffd700"
-                  strokeWidth="4"
-                  strokeLinecap="round"
-                />
-              );
-            })}
+              {Array.from({ length: 12 }).map((_, i) => {
+                const angle = (i * 30) * (Math.PI / 180);
+                const round = (num) => Math.round(num * 1000) / 1000;
+                const x1 = round(55 + Math.cos(angle) * 55);
+                const y1 = round(55 + Math.sin(angle) * 55);
+                const x2 = round(55 + Math.cos(angle) * 70);
+                const y2 = round(55 + Math.sin(angle) * 70);
+                return (
+                  <line
+                    key={i}
+                    x1={x1}
+                    y1={y1}
+                    x2={x2}
+                    y2={y2}
+                    stroke="#ffd700"
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                  />
+                );
+              })}
             <circle cx="55" cy="55" r="45" fill="#ffe066" stroke="#ffd700" strokeWidth="6" />
           </svg>
         </div>
