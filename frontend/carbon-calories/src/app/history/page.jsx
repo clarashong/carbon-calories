@@ -1,27 +1,3 @@
-"use client";
-
-import React, { useEffect, useState } from "react";
-
-function MealDetails({ meal, onClose }) {
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded shadow-lg max-w-md w-full">
-        <h2 className="text-xl font-bold mb-2">{meal.Name}</h2>
-        <p className="mb-2">Date: {meal.Date}</p>
-        <p className="mb-2">Emissions: {meal.Emissions}</p>
-        <p className="mb-2">Rating: {meal.TrafficLight}</p>
-        <h3 className="font-semibold mt-4 mb-2">Ingredients</h3>
-        <ul className="list-disc ml-4">
-          {meal.Ingredients.map((ing, idx) => (
-            <li key={idx}>{ing.name} ({ing.quantity})</li>
-          ))}
-        </ul>
-        <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded" onClick={onClose}>Close</button>
-      </div>
-    </div>
-  );
-}
-
 export default function Page() {
   const [meals, setMeals] = useState([]);
   const [selectedMeal, setSelectedMeal] = useState(null);
