@@ -53,7 +53,15 @@ export default function SignUpPage() {
 	};
 
 	return (
-		<main className="relative min-h-screen flex flex-col items-center justify-center w-full overflow-hidden py-10">
+			<main
+				className="relative min-h-screen flex flex-col items-center justify-center w-full overflow-hidden py-10 bg-[#d5dcd2]"
+				style={{
+					backgroundImage: "url('/field.png')",
+					backgroundSize: "cover",
+					backgroundPosition: "center",
+					backgroundRepeat: "no-repeat"
+				}}
+			>
 			{/* Blue sky background */}
 			<div className="fixed inset-0 w-full h-full -z-10">
 				<svg
@@ -77,60 +85,60 @@ export default function SignUpPage() {
 					<path d="M0,800 Q480,750 960,800 T1440,800 V900 H0 Z" fill="#6fd37e" />
 				</svg>
 			</div>
-			<div className="bg-white bg-opacity-80 rounded-xl shadow-lg p-8 w-full max-w-md flex flex-col gap-8 z-10">
-				<h1 className="text-3xl font-bold text-blue-700 text-center mb-2">Create Account</h1>
-				<form className="flex flex-col gap-4" onSubmit={handleSignUp}>
-					<label className="text-blue-800 font-semibold">Username</label>
-					<input
-						className="rounded-lg border border-blue-200 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300 text-blue-900 bg-blue-50"
-						type="text"
-						placeholder="Choose a username"
-						value={username}
-						onChange={e => setUsername(e.target.value)}
-					/>
-								<label className="text-blue-800 font-semibold">Password</label>
+					<div className="bg-[#f5f5f0] bg-opacity-90 rounded-xl shadow-lg drop-shadow-[0_8px_32px_rgba(123,86,36,0.35)] p-8 w-full max-w-md flex flex-col gap-8 z-10">
+						<h1 className="text-3xl font-bold text-[#4B2E09] text-center mb-2">Create Account</h1>
+						<form className="flex flex-col gap-4" onSubmit={handleSignUp}>
+							<label className="text-[#4B2E09] font-semibold">Username</label>
+							<input
+								className="rounded-lg border border-[#d5dcd2] px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#7da63a] text-[#4B2E09] bg-[#e9ede5]"
+								type="text"
+								placeholder="Choose a username"
+								value={username}
+								onChange={e => setUsername(e.target.value)}
+							/>
+							<label className="text-[#4B2E09] font-semibold">Password</label>
+							<input
+								className="rounded-lg border border-[#d5dcd2] px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#7da63a] text-[#4B2E09] bg-[#e9ede5]"
+								type="password"
+								placeholder="Create a password"
+								value={password}
+								onChange={e => {
+									setPassword(e.target.value);
+									if (!hasTypedPassword && e.target.value.length > 0) {
+										setHasTypedPassword(true);
+									}
+								}}
+							/>
+													{hasTypedPassword && (
+														<div className="mt-2">
+															<span className="font-semibold text-[#4B2E09]">Password must have:</span>
+															<ul className="list-disc ml-6 mt-1 text-sm">
+																{passwordMetrics.map((m, idx) => (
+																	<li key={idx} className={m.test(password) ? "text-[#7da63a]" : "text-red-500"}>{m.label}</li>
+																))}
+															</ul>
+															<span className={`block mt-2 font-bold ${strength === "Strong" ? "text-[#7da63a]" : strength === "Medium" ? "text-yellow-600" : "text-red-600"}`}>
+																Strength: {strength}
+															</span>
+														</div>
+													)}
+											<label className="text-[#4B2E09] font-semibold">Confirm Password</label>
 											<input
-												className="rounded-lg border border-blue-200 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300 text-blue-900 bg-blue-50"
+												className="rounded-lg border border-[#d5dcd2] px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#7da63a] text-[#4B2E09] bg-[#e9ede5]"
 												type="password"
-												placeholder="Create a password"
-												value={password}
-												onChange={e => {
-													setPassword(e.target.value);
-													if (!hasTypedPassword && e.target.value.length > 0) {
-														setHasTypedPassword(true);
-													}
-												}}
+												placeholder="Re-enter your password"
+												value={confirm}
+												onChange={e => setConfirm(e.target.value)}
 											/>
-											{hasTypedPassword && (
-												<div className="mt-2">
-													<span className="font-semibold text-blue-700">Password must have:</span>
-													<ul className="list-disc ml-6 mt-1 text-sm">
-														{passwordMetrics.map((m, idx) => (
-															<li key={idx} className={m.test(password) ? "text-green-700" : "text-red-500"}>{m.label}</li>
-														))}
-													</ul>
-													<span className={`block mt-2 font-bold text-${strength === "Strong" ? "green" : strength === "Medium" ? "yellow" : "red"}-600`}>
-														Strength: {strength}
-													</span>
-												</div>
-											)}
-								<label className="text-blue-800 font-semibold">Confirm Password</label>
-								<input
-									className="rounded-lg border border-blue-200 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300 text-blue-900 bg-blue-50"
-									type="password"
-									placeholder="Re-enter your password"
-									value={confirm}
-									onChange={e => setConfirm(e.target.value)}
-								/>
-					{error && <span className="text-red-600 text-sm mt-2">{error}</span>}
-					{success && <span className="text-green-600 text-sm mt-2">{success}</span>}
-					<button
-						type="submit"
-						className="mt-2 bg-blue-400 hover:bg-blue-500 text-white font-semibold py-2 rounded-lg transition"
-						disabled={!username.trim() || !password.trim() || !confirm.trim()}
-					>
-						Create Account
-					</button>
+								{error && <span className="text-red-600 text-sm mt-2">{error}</span>}
+								{success && <span className="text-[#7da63a] text-sm mt-2">{success}</span>}
+								<button
+									type="submit"
+									className="mt-2 bg-[#7da63a] hover:bg-[#5c7c2b] text-white font-semibold py-2 rounded-lg transition"
+									disabled={!username.trim() || !password.trim() || !confirm.trim()}
+								>
+									Create Account
+								</button>
 				</form>
 			</div>
 		</main>

@@ -5,6 +5,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
 export default function LoginPage() {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
@@ -13,15 +15,30 @@ export default function LoginPage() {
 
 	const handleLogin = async e => {
 		e.preventDefault();
-		// Placeholder login logic
 		if (!username || !password) {
 			setError("Please enter both username and password.");
 			return;
 		}
 		setError("");
-		// TODO: Replace with real login API call
-		alert(`Logged in as ${username}`);
-		router.push("/home");
+		try {
+			const response = await fetch(`${apiUrl}/login`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({ username, password })
+			});
+			if (!response.ok) {
+				const data = await response.json();
+				console.log(response);
+				setError(data.detail || "Login failed.");
+				return;
+			}
+			localStorage.setItem("user_id", username);
+			router.push("/");
+		} catch (err) {
+			setError("Network error. Please try again.");
+		}
 	};
 
 	return (
