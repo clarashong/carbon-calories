@@ -7,7 +7,7 @@ export default function HomePage() {
   return (
     <main className="relative flex flex-col items-center justify-center min-h-screen w-full overflow-hidden bg-gradient-to-t from-blue-100 via-blue-200 to-blue-300">
       {/* Sun above the text */}
-      <div className="z-10 flex flex-col items-center mt-8 w-full">
+  <div className="z-10 flex flex-col items-center mt-2 w-full">
         <div className="w-full flex flex-row items-center justify-start relative">
           {/* Clouds spread across the sky */}
           {/* Left clouds */}
@@ -49,13 +49,13 @@ export default function HomePage() {
             <circle cx="55" cy="55" r="45" fill="#ffe066" stroke="#ffd700" strokeWidth="6" />
           </svg>
         </div>
-        <h1 className="text-4xl md:text-5xl font-bold mb-8 text-green-900 drop-shadow-lg z-10 text-center">
+  <h1 className="text-4xl md:text-5xl font-bold mb-4 text-green-900 drop-shadow-lg z-10 text-center">
           Welcome to Carbon Calories
         </h1>
       </div>
       {/* Button */}
       <button
-        className="z-10 px-8 py-4 text-lg font-semibold bg-green-500 hover:bg-green-600 text-white rounded-lg shadow-lg transition mb-8"
+        className="z-10 px-8 py-4 text-lg font-semibold bg-green-500 hover:bg-green-600 text-white rounded-lg shadow-lg transition mb-4"
         onClick={() => router.push("/logMeal")}
       >
         Let's save the planet!
