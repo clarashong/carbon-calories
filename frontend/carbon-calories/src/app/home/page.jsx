@@ -26,8 +26,8 @@ export default function HomePage() {
             <ellipse cx="130" cy="30" rx="28" ry="10" fill="#fff" opacity="0.7" />
           </svg>
           <svg width="110" height="110" viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg" className="mb-4 ml-4 relative z-10">
-            {/* Sun rays */}
-            {[...Array(12)].map((_, i) => {
+            {/* Sun rays - deterministic rendering */}
+            {Array.from({ length: 12 }).map((_, i) => {
               const angle = (i * 30) * (Math.PI / 180);
               const x1 = 55 + Math.cos(angle) * 55;
               const y1 = 55 + Math.sin(angle) * 55;
