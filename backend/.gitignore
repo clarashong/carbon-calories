@@ -1,0 +1,17 @@
+__pycache__/
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Virtual environment directories 
+.venv/
+venv/
+env/
+
+# Environment and Configuration Files
+.env
+.flaskenv
+
+# VS Code
+.vscode/
