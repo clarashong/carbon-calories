@@ -48,10 +48,10 @@ export default function Page() {
         <table className="min-w-full bg-white border rounded shadow-lg">
           <thead>
             <tr>
-              <th className="py-3 px-6 border-b text-left">Meal Name</th>
-              <th className="py-3 px-6 border-b text-left">Date Logged</th>
-              <th className="py-3 px-6 border-b text-left">Emissions</th>
-              <th className="py-3 px-6 border-b text-left">Rating</th>
+              <th className="py-3 px-6 border-b text-blue-700 text-left">Meal Name</th>
+              <th className="py-3 px-6 border-b text-blue-700 text-left">Date Logged</th>
+              <th className="py-3 px-6 border-b text-left text-blue-700">Emissions</th>
+              <th className="py-3 px-6 border-b text-left text-blue-700">Rating</th>
             </tr>
           </thead>
           <tbody>
