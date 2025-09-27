@@ -73,7 +73,7 @@ async def get_history(user_id: str):
 
 # GET /emissions: Get carbon emission range based on ingredients and quantity
 @app.get("/emissions")
-async def get_emissions():
+async def get_emissions(meal: MealOut):
     print("getting emissions")
     """Get carbon emission range [low, high] using Gemini based on ingredients and quantity."""
     # TODO: Implement logic using Gemini
@@ -87,56 +87,59 @@ async def get_emissions():
     client = genai.Client(api_key=api_key)
 
     # Local variable: ingredient list
-    ingredients = [
-        {"name": "apple", "quantity": 1},
-        {"name": "rice", "quantity": 200},   
-        {"name": "beef", "quantity": 100}    
-    ]
+    ingredients = meal.model_dump().get("ingredients")
 
-    # Build the prompt
-    prompt = f"""
-    You are given a list of food ingredients with quantities:
+    results = []
 
-    {json.dumps(ingredients, indent=2)}
+     # Loop through each ingredient to get its emissions
+    for ingredient in ingredients:
+        # Prepare the prompt for Gemini
+        prompt = f"""
+        You are given a single food ingredient with quantity:
 
-    Please estimate the carbon emissions in kilograms of CO₂ equivalent (kg CO2e) for this ingredient list.
-    Give me a low estimate and a high estimate, considering production, transportation, processing, etc.
+        {json.dumps(ingredient, indent=2)}
 
-    Return **ONLY** in this JSON format:
+        Please estimate the carbon emissions in kilograms of CO₂ equivalent (kg CO2e) for this ingredient.
+        Give me a low estimate and a high estimate, considering production, transportation, processing, etc.
 
-    {{
-    "emissions": {{
-        "low": <lowest reasonable estimate as a float>,
-        "high": <highest reasonable estimate as a float>
-    }}
-    }}
-    """
-    # Send to Gemini API
-    model_name = "gemini-2.5-flash"   # or another model you have access to 
-    response = client.models.generate_content(
-        model=model_name,
-        contents=prompt
-    )
-    print(response)
+        Return ONLY in this JSON format:
 
-    # Extract text from Gemini response
-    raw_text = response.candidates[0].content.parts[0].text.strip()
+        {{
+            "emissions": {{
+                "low": <lowest reasonable estimate as a float>,
+                "high": <highest reasonable estimate as a float>
+            }}
+        }}
+        """
 
-    # Remove markdown code fences if present
-    raw_text = re.sub(r"^```(?:json)?\s*", "", raw_text)
-    raw_text = re.sub(r"\s*```$", "", raw_text)
+        # Send the prompt to Gemini API
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt
+        )
 
-    # Parse JSON safely
-    try:
-        parsed = json.loads(raw_text)
-        emissions = parsed.get("emissions", {})
-        low = emissions.get("low")
-        high = emissions.get("high")
-    except Exception:
-        low, high = None, None
+        # Extract and clean the response text
+        raw_text = response.candidates[0].content.parts[0].text.strip()
+        raw_text = re.sub(r"^```(?:json)?\s*", "", raw_text)
+        raw_text = re.sub(r"\s*```$", "", raw_text)
 
-    # Return clean JSON
-    return {"emissions": {"low": low, "high": high}}
+        # Parse the JSON response safely
+        try:
+            parsed = json.loads(raw_text)
+            emissions = parsed.get("emissions", {})
+        except Exception:
+            emissions = {"low": None, "high": None}
+
+        # Append emissions info to the ingredient
+        ingredient_result = {
+            "name": ingredient["name"],
+            "quantity": ingredient["quantity"],
+            "emissions": emissions
+        }
+        results.append(ingredient_result)
+
+    # Return list of ingredients with emissions
+    return results
 
 
 # POST /session: Create anonymous user session
