@@ -4,26 +4,18 @@ from pymongo.server_api import ServerApi
 import certifi
 from dotenv import load_dotenv
 import os
-<<<<<<< HEAD
+import json
+from google import genai
+import re
 from interface import MealIn, MealOut
 
 
 load_dotenv()
 MONGODB_URI = os.getenv("MONGO_DB_URI")
-=======
-import json
-from google import genai
-import re
-
-
-load_dotenv()
-MONGODB_URI = os.getenv("MONGO_DB_URI", "mongodb+srv://<username>:<password>@cluster0.mongodb.net/?retryWrites=true&w=majority")
->>>>>>> 409ec14e6a45792b1178bdecf9f574ce45c715e6
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "your_gemini_api_key_here")
 
 
 # MongoDB client setup (sensible defaults)
-<<<<<<< HEAD
 mongo_client = MongoClient(MONGODB_URI, tlsCAFile=certifi.where())
 db = mongo_client["carbon_calories"]
 meals_collection  = db["carbon-calories"]["meals"]
