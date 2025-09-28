@@ -34,7 +34,7 @@ export default function LoginPage() {
 				setError(data.detail || "Login failed.");
 				return;
 			}
-			localStorage.setItem("user_id", username);
+			localStorage.setItem("username", username);
 			router.push("/");
 		} catch (err) {
 			setError("Network error. Please try again.");
