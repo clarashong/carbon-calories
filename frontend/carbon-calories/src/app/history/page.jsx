@@ -24,8 +24,8 @@ export default function Page() {
             emissions_low += parseFloat(ing.emissions.low) || 0;
             emissions_high += parseFloat(ing.emissions.high) || 0;
           }
-          meal["emissionsLow"] = emissions_low.toFixed(0);
-          meal["emissionsHigh"] = emissions_high.toFixed(0);
+          meal["emissionsLow"] = emissions_low.toFixed(1);
+          meal["emissionsHigh"] = emissions_high.toFixed(1);
         }
         setMeals(data.meals || []);
       } catch (err) {
@@ -65,7 +65,7 @@ export default function Page() {
               >
                 <td className="py-2 px-6 border-b text-[#4B2E09]">{meal.name}</td>
                 <td className="py-2 px-6 border-b text-[#4B2E09]">{meal.date}</td>
-                <td className="py-2 px-6 border-b text-[#4B2E09]">{meal.emissionsLow + "-" + meal.emissionsHigh}</td>
+                <td className="py-2 px-6 border-b text-[#4B2E09]">{meal.emissionsLow + " - " + meal.emissionsHigh}</td>
                 <td className="py-2 px-6 border-b text-[#4B2E09]">{meal.TrafficLight}</td>
               </tr>
             ))}
