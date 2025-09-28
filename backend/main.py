@@ -15,6 +15,7 @@ from auth_token import get_current_user
 load_dotenv()
 MONGODB_URI = os.getenv("MONGO_DB_URI")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "your_gemini_api_key_here")
+gemini_client = genai.Client(api_key=GEMINI_API_KEY)
 
 # MongoDB client setup (sensible defaults)
 mongo_client = client.mongo_client
@@ -85,16 +86,6 @@ async def get_history(user_id: str):
 async def get_emissions(ingredients: IngredientList):
     print("getting emissions")
     """Get carbon emission range [low, high] using Gemini based on ingredients and quantity."""
-    # TODO: Implement logic using Gemini
-
-    # Configure your Gemini API key
-    # Either set the environment variable GEMINI_API_KEY, or substitute directly (not recommended for production)
-    api_key = os.getenv("GEMINI_API_KEY")
-    if not api_key:
-        raise RuntimeError("Please set the GEMINI_API_KEY environment variable")
-
-    client = genai.Client(api_key=api_key)
-
     # Local variable: ingredient list
     ingredients_data = ingredients.model_dump()
 
@@ -122,7 +113,7 @@ async def get_emissions(ingredients: IngredientList):
         """
 
         # Send the prompt to Gemini API
-        response = client.models.generate_content(
+        response = gemini_client.models.generate_content(
             model="gemini-2.5-flash",
             contents=prompt
         )
@@ -178,3 +169,39 @@ def log_meal_for_user(user_id: str, meal: MealTableIn):
         meal_id=new_meal_id,
         **meal_data
     )
+
+@app.post('/suggestion', response_model=str)
+def get_meal_suggestion(meal: MealIn): 
+    print("getting suggestion")
+    meal_data = meal.model_dump()
+
+    meal_data = {"ingredients": meal_data["ingredients"]}
+
+    prompt = f"""
+        You are given a meal with ingredients and quantity:
+
+        {json.dumps(meal_data, indent=2)}
+
+        Please provide suggestions on how to make this meal more environmentally friendly.
+        Focus on ingredient substitutions, portion sizes, and cooking methods.
+        Provide 2-3 specific suggestions in concise bullet points.
+        """
+    
+    response = gemini_client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=prompt
+    )
+
+    # Extract and clean the response text
+    raw_text = response.candidates[0].content.parts[0].text.strip()
+    raw_text = re.sub(r"^```(?:json)?\s*", "", raw_text)
+    raw_text = re.sub(r"\s*```$", "", raw_text)
+
+    return raw_text
+
+
+    
+
+
+
+
