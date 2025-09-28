@@ -2,11 +2,18 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-// Remove static savedMeals, will fetch from backend
+const api_url = process.env.NEXT_PUBLIC_API_URL;
+
+const savedMealsMock = [
+  { id: 1, name: "Spaghetti Bolognese" },
+  { id: 2, name: "Chicken Salad" },
+  { id: 3, name: "Vegetable Stir Fry" },
+];
 
 export default function LogMealPage() {
   const [mealName, setMealName] = useState("");
   const [selectedMeal, setSelectedMeal] = useState(null);
+  const [savedMeals, setSavedMeals] = useState(savedMealsMock);
   const [recentMeals, setRecentMeals] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -15,38 +22,29 @@ export default function LogMealPage() {
     return today.toISOString().slice(0, 10);
   });
   const router = useRouter();
+  const username = typeof window !== "undefined" ? localStorage.getItem("username") : "";
 
   useEffect(() => {
-    // Replace URL with your backend endpoint
-    fetch("/api/history")
-      .then(res => res.json())
-      .then(data => {
-        // Filter for unique meal names, most recent first, up to 30
-        const seen = new Set();
-        const uniqueMeals = [];
-        for (const meal of data.reverse()) { // assuming most recent last
-          if (!seen.has(meal.name)) {
-            seen.add(meal.name);
-            uniqueMeals.push(meal);
-            if (uniqueMeals.length === 30) break;
-          }
+    async function fetchMeals() {
+        console.log("Fetching meals for user:", username);
+        if (!username) return;
+        try {
+          const res = await fetch(`${api_url.replace(/\/$/, "")}/users/${username}/history`);
+          let data = await res.json();
+          const firstThree = data.slice(0, 3);
+          console.log(firstThree); 
+          setSavedMeals(firstThree || []);
+        } catch (err) {
+          setSavedMeals([]);
         }
-        setRecentMeals(uniqueMeals);
-      })
-      .catch(() => setRecentMeals([]));
-  }, []);
-
-  useEffect(() => {
-    if (!searchTerm.trim()) {
-      setSearchResults([]);
-      return;
     }
-    // Simple search filter on recentMeals
-    const results = recentMeals.filter(meal =>
-      meal.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setSearchResults(results);
-  }, [searchTerm, recentMeals]);
+    fetchMeals(); 
+  }, [username]); 
+
+  const handleMealNameChange = (e) => {
+    setMealName(e.target.value);
+    localStorage.setItem("mealName", e.target.value);
+  }
 
   return (
     <main
@@ -91,7 +89,7 @@ export default function LogMealPage() {
             type="text"
             placeholder="e.g. Avocado Toast"
             value={mealName}
-            onChange={e => setMealName(e.target.value)}
+            onChange={handleMealNameChange}
           />
           <button
             type="button"

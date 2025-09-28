@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
+const api_url = process.env.NEXT_PUBLIC_API_URL;
+
 // Add comparisons array at the top level
 const comparisons = [
 	{ name: "McDonald's Burger", carbon: 2.5 },
@@ -14,22 +16,92 @@ export default function MealResultsPage() {
 	const router = useRouter();
 	const [mealIngredients, setMealIngredients] = useState([]);
 	const [mealName, setMealName] = useState("");
+	const [meal, setMeal] = useState({
+		name: mealName || "Meal",
+		date: new Date().toISOString(),
+		ingredients: [],
+		ingredientsEmissions: [],
+	});
+	const [loading, setLoading] = useState(false);
+	const [totalCarbon, setTotalCarbon] = useState([0,0]);
 
 	useEffect(() => {
 		const stored = localStorage.getItem("mealIngredients");
+		let ingredients = [];
 		if (stored) {
-			setMealIngredients(JSON.parse(stored));
+			// Only keep name and quantity for each ingredient
+			ingredients = JSON.parse(stored).map(({ name, quantity }) => ({ name, quantity }));
+			setMealIngredients(ingredients);
 		}
 		const storedName = localStorage.getItem("mealName");
 		if (storedName) {
 			setMealName(storedName);
 		}
+
+		// API call to get emissions and then post meal
+		async function fetchEmissionsAndPostMeal() {
+			if (!ingredients.length) return;
+			try {
+				setLoading(true);
+				console.log("Fetching emissions for ingredients:", ingredients);
+				const emissionsRes = await fetch(`${api_url.replace(/\/$/, "")}/emissions`, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify({ ingredients })
+				});
+				const emissionsData = await emissionsRes.json();
+				if (emissionsRes.ok && emissionsData) {
+					let mealObj = {
+						name: storedName || "Meal",
+						date: "",
+						ingredients,
+						ingredientsEmissions: emissionsData,
+					};
+					setMeal(mealObj);
+
+					console.log(mealObj); 
+
+					// POST meal 
+					const username = typeof window !== "undefined" ? localStorage.getItem("username") : "";
+					if (username) {
+						await fetch(`${api_url.replace(/\/$/, "")}/users/${username}/meals`, {
+							method: "POST",
+							headers: {
+								"Content-Type": "application/json"
+							},
+							body: JSON.stringify(mealObj)
+						});
+					}
+				} else {
+					console.error("Failed to fetch emissions:", emissionsData);
+				}
+			} catch (err) {
+				console.error("Error fetching emissions or posting meal:", err);
+			} finally {
+				setLoading(false);
+			}
+		}
+		fetchEmissionsAndPostMeal();
 	}, []);
 
-	const totalCarbon = mealIngredients.reduce(
-		(sum, ing) => sum + (ing.carbon || 0),
-		0
-	);
+	useEffect(() => { calculateTotalCarbon() }, [meal])
+
+	function calculateTotalCarbon() {
+		let emissions_low = 0.0; 
+		let emissions_high = 0.0;
+		console.log(meal.ingredientsEmissions);
+		for (let ing of meal.ingredientsEmissions) {
+			emissions_high += parseFloat(ing.emissions.high) || 0;
+			emissions_low += parseFloat(ing.emissions.low) || 0;
+			console.log(ing.name, ing.emissions.high, ing.emissions.low); 
+			console.log(emissions_high, emissions_low);
+		}
+		console.log(emissions_high, emissions_low)
+		setTotalCarbon([emissions_low, emissions_high]);
+		return { emissions_low, emissions_high };
+	}
 
 	function MealTrafficLight({ value }) {
 		// Define thresholds: green < 1.0, yellow < 2.0, red >= 2.0
@@ -79,15 +151,15 @@ export default function MealResultsPage() {
 	}
 
 	return (
-				<main
-					className="relative min-h-screen flex flex-col items-center justify-center w-full overflow-hidden py-10 pt-20 bg-[#d5dcd2]"
-				style={{
-					backgroundImage: "url('/field.png')",
-					backgroundSize: "cover",
-					backgroundPosition: "center",
-					backgroundRepeat: "no-repeat"
-				}}
-			>
+		<main
+			className="relative min-h-screen flex flex-col items-center justify-center w-full overflow-hidden py-10 pt-20 bg-[#d5dcd2]"
+			style={{
+				backgroundImage: "url('/field.png')",
+				backgroundSize: "cover",
+				backgroundPosition: "center",
+				backgroundRepeat: "no-repeat"
+			}}
+		>
 			{/* Back arrow button */}
 			<button
 				className="absolute top-6 left-6 flex items-center text-blue-700 hover:text-blue-900 bg-white bg-opacity-80 rounded-full p-2 shadow"
@@ -149,73 +221,78 @@ export default function MealResultsPage() {
 					/>
 				</svg>
 			</div>
-					<div className="bg-[#f5f5f0] bg-opacity-90 rounded-xl shadow-lg drop-shadow-[0_8px_32px_rgba(123,86,36,0.35)] p-8 w-full max-w-2xl flex flex-col gap-8 z-10">
-						<h1 className="text-3xl font-bold text-[#4B2E09] text-center mb-2">
-							{mealName ? mealName : "Meal Carbon Emissions"}
-						</h1>
-				{/* Per-ingredient section */}
-						<section>
-							<h2 className="text-xl font-semibold text-[#4B2E09] mb-2">
-								Per-Ingredient Breakdown
-							</h2>
-							<table className="w-full text-[#4B2E09] mb-4">
-						<thead>
-							<tr className="border-b">
-								<th className="text-left py-1">Ingredient</th>
-								<th className="text-left py-1">Quantity</th>
-								<th className="text-left py-1">CO₂ (kg)</th>
-							</tr>
-						</thead>
-						<tbody>
-							{mealIngredients.map((ing, idx) => (
-								<tr key={idx} className="border-b last:border-b-0">
-									<td className="py-1">{ing.name}</td>
-									<td className="py-1">{ing.quantity}</td>
-									<td className="py-1">
-										{typeof ing.carbon === "number"
-											? ing.carbon.toFixed(2)
-											: "-"}
-									</td>
+			{loading ? (
+				<div className="flex flex-col items-center justify-center w-full h-full min-h-[300px]">
+					<div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-[#7da63a] mb-4"></div>
+					<span className="text-lg text-[#4B2E09] font-semibold">Calculating emissions...</span>
+				</div>
+			) : (
+				<div className="bg-[#f5f5f0] bg-opacity-90 rounded-xl shadow-lg drop-shadow-[0_8px_32px_rgba(123,86,36,0.35)] p-8 w-full max-w-2xl flex flex-col gap-8 z-10">
+					<h1 className="text-3xl font-bold text-[#4B2E09] text-center mb-2">
+						{mealName ? mealName : "Meal Carbon Emissions"}
+					</h1>
+					{/* Per-ingredient section */}
+					<section>
+						<h2 className="text-xl font-semibold text-[#4B2E09] mb-2">
+							Per-Ingredient Breakdown
+						</h2>
+						<table className="w-full text-[#4B2E09] mb-4">
+							<thead>
+								<tr className="border-b">
+									<th className="text-left py-1">Ingredient</th>
+									<th className="text-left py-1">Quantity</th>
+									<th className="text-left py-1">CO₂ (kg)</th>
 								</tr>
-							))}
-						</tbody>
-					</table>
-				</section>
-				{/* Total meal section with traffic light */}
-						<section className="flex flex-col items-center mb-4">
-							<h2 className="text-xl font-semibold text-[#4B2E09] mb-2">
-								Total Meal Emissions
-							</h2>
-							<div className="flex flex-col items-center gap-2">
-								<div className="text-3xl font-bold text-[#7da63a]">
-									{totalCarbon.toFixed(2)} kg CO₂
-								</div>
-								{/* Meal traffic light */}
-								<MealTrafficLight value={totalCarbon} />
-							</div>
-						</section>
-				{/* Comparisons section */}
-						<section>
-							<h2 className="text-xl font-semibold text-[#4B2E09] mb-2">
-								Comparisons
-							</h2>
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-								{comparisons.map((item, idx) => (
-									<div
-										key={idx}
-										className="bg-[#e9ede5] rounded-lg p-4 flex flex-col items-center shadow"
-									>
-										<div className="font-semibold text-[#4B2E09] mb-1">
-											{item.name}
-										</div>
-										<div className="text-lg text-[#7da63a] font-bold">
-											{item.carbon.toFixed(2)} kg CO₂
-										</div>
-									</div>
+							</thead>
+							<tbody>
+								{meal.ingredientsEmissions.map((ing, idx) => (
+									<tr key={idx} className="border-b last:border-b-0">
+										<td className="py-1">{ing.name}</td>
+										<td className="py-1">{ing.quantity}</td>
+										<td className="py-1">
+											{ing.emissions ? `${parseFloat(ing.emissions.low).toFixed(1)} - ${parseFloat(ing.emissions.high).toFixed(1)}` : "-"}
+										</td>
+									</tr>
 								))}
+							</tbody>
+						</table>
+					</section>
+					{/* Total meal section with traffic light */}
+					<section className="flex flex-col items-center mb-4">
+						<h2 className="text-xl font-semibold text-[#4B2E09] mb-2">
+							Total Meal Emissions
+						</h2>
+						<div className="flex flex-col items-center gap-2">
+							<div className="text-3xl font-bold text-[#7da63a]">
+								{totalCarbon[0].toFixed(1) + "-" + totalCarbon[1].toFixed(1)} kg CO₂
 							</div>
-						</section>
-			</div>
+							{/* Meal traffic light */}
+							<MealTrafficLight value={totalCarbon} />
+						</div>
+					</section>
+					{/* Comparisons section */}
+					<section>
+						<h2 className="text-xl font-semibold text-[#4B2E09] mb-2">
+							Comparisons
+						</h2>
+						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+							{comparisons.map((item, idx) => (
+								<div
+									key={idx}
+									className="bg-[#e9ede5] rounded-lg p-4 flex flex-col items-center shadow"
+								>
+									<div className="font-semibold text-[#4B2E09] mb-1">
+										{item.name}
+									</div>
+									<div className="text-lg text-[#7da63a] font-bold">
+										{item.carbon} kg CO₂
+									</div>
+								</div>
+							))}
+						</div>
+					</section>
+				</div>
+			)}
 		</main>
 	);
 }

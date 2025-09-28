@@ -35,3 +35,6 @@ class MealOut(MealTableIn):
 class User(BaseModel):
     username: str
     password: str
+
+class IngredientList(BaseModel):
+    ingredients: List[Ingredient]

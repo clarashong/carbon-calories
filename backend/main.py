@@ -7,7 +7,7 @@ import os
 import json
 from google import genai
 import re
-from interface import MealIn, MealOut, IngredientsEmissions, MealTableIn
+from interface import MealIn, MealOut, IngredientsEmissions, MealTableIn, IngredientList
 import client # import the MongoDB client
 import auth
 from auth_token import get_current_user
@@ -80,9 +80,9 @@ async def get_history(user_id: str):
     
     return {"meals": formatted_meals}
 
-# GET /emissions: Get carbon emission range based on ingredients and quantity
-@app.get("/emissions")
-async def get_emissions(meal: MealIn):
+ # POST /emissions: Get carbon emission range based on ingredients and quantity
+@app.post("/emissions")
+async def get_emissions(ingredients: IngredientList):
     print("getting emissions")
     """Get carbon emission range [low, high] using Gemini based on ingredients and quantity."""
     # TODO: Implement logic using Gemini
@@ -96,12 +96,12 @@ async def get_emissions(meal: MealIn):
     client = genai.Client(api_key=api_key)
 
     # Local variable: ingredient list
-    ingredients = meal.model_dump().get("ingredients")
+    ingredients_data = ingredients.model_dump()
 
     results = []
 
      # Loop through each ingredient to get its emissions
-    for ingredient in ingredients:
+    for ingredient in ingredients_data["ingredients"]:
         # Prepare the prompt for Gemini
         prompt = f"""
         You are given a single food ingredient with quantity:
