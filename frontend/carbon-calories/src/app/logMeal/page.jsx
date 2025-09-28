@@ -4,24 +4,36 @@ import { useRouter } from "next/navigation";
 
 // Remove static savedMeals, will fetch from backend
 
+const api_url = process.env.NEXT_PUBLIC_API_URL;
+
+const mealsToShowDemo = [{"name": "Chicken Salad"}, {"name": "Veggie Stir-fry"}, {"name": "Beef Tacos"}]; // demo meals
+
 export default function LogMealPage() {
   const [recentMeals, setRecentMeals] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const [mealsToShow, setMealsToShow] = useState(mealsToShowDemo);
   const router = useRouter();
+  const username = typeof window !== "undefined" ? localStorage.getItem("username") : "";
 
   useEffect(() => {
-    fetch("/api/history")
+    fetch(`${api_url.replace(/\/$/, "")}/users/${username}/history`)
       .then(res => res.json())
       .then(data => {
+        setRecentMeals(data); 
         const seen = new Set();
         const uniqueMeals = [];
         for (const meal of data.reverse()) {
+          console.log(meal.name); 
           if (!seen.has(meal.name)) {
             seen.add(meal.name);
             uniqueMeals.push(meal);
             if (uniqueMeals.length === 30) break;
           }
+          console.log(uniqueMeals);
+        }
+        if (uniqueMeals.length === 0) {
+          setMealsToShow(recentMeals); 
         }
         setRecentMeals(uniqueMeals);
       })
@@ -30,16 +42,15 @@ export default function LogMealPage() {
 
   useEffect(() => {
     if (!searchTerm.trim()) {
-      setSearchResults([]);
+      setSearchResults(recentMeals);
       return;
     }
     const results = recentMeals.filter(meal =>
       meal.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setSearchResults(results);
+    setMealsToShow(results); 
   }, [searchTerm, recentMeals]);
-
-  const mealsToShow = searchTerm.trim() ? searchResults : recentMeals;
 
   return (
     <main

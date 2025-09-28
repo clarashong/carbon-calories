@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import AIPopup from "../../components/AIPopup";
 import { useRouter } from "next/navigation";
 
 const api_url = process.env.NEXT_PUBLIC_API_URL;
@@ -267,7 +268,7 @@ export default function MealResultsPage() {
 								{totalCarbon[0].toFixed(1) + "-" + totalCarbon[1].toFixed(1)} kg CO₂
 							</div>
 							{/* Meal traffic light */}
-							<MealTrafficLight value={totalCarbon} />
+							<MealTrafficLight value={totalCarbon[0]} />
 						</div>
 					</section>
 					{/* Comparisons section */}
@@ -293,6 +294,7 @@ export default function MealResultsPage() {
 					</section>
 				</div>
 			)}
+			<AIPopup meal={meal} />
 		</main>
 	);
 }

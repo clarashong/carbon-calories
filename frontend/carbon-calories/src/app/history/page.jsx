@@ -35,6 +35,12 @@ export default function Page() {
     fetchMeals();
   }, [username]);
 
+  function calculateRating(meal) {
+    const avgEmissions = (parseFloat(meal.emissionsLow) + parseFloat(meal.emissionsHigh)) / 2;
+    if (avgEmissions < 1) return "🟢";
+    if (avgEmissions < 2) return "🟡";
+    return "🔴";
+  }
   return (
     <main
       className="relative min-h-screen w-full flex flex-col items-center pt-20 pb-8 px-8 overflow-hidden"
@@ -53,7 +59,7 @@ export default function Page() {
               <th className="py-3 px-6 border-b text-[#7da63a] text-left">Meal Name</th>
               <th className="py-3 px-6 border-b text-[#7da63a] text-left">Date Logged</th>
               <th className="py-3 px-6 border-b text-left text-[#7da63a]">Emissions (kg CO2)</th>
-              <th className="py-3 px-6 border-b text-left text-[#7da63a]">Rating</th>
+              <th className="py-3 px-6 border-b text-left text-[#7da63a]">Traffic Light Rating</th>
             </tr>
           </thead>
           <tbody>
@@ -66,7 +72,7 @@ export default function Page() {
                 <td className="py-2 px-6 border-b text-[#4B2E09]">{meal.name}</td>
                 <td className="py-2 px-6 border-b text-[#4B2E09]">{meal.date}</td>
                 <td className="py-2 px-6 border-b text-[#4B2E09]">{meal.emissionsLow + " - " + meal.emissionsHigh}</td>
-                <td className="py-2 px-6 border-b text-[#4B2E09]">{meal.TrafficLight}</td>
+                <td className="py-2 px-6 border-b text-[#4B2E09]">{calculateRating(meal)}</td>
               </tr>
             ))}
           </tbody>
