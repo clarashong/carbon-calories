@@ -1,17 +1,43 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-const savedMeals = [
-  { id: 1, name: "Veggie Stir Fry" },
+const api_url = process.env.NEXT_PUBLIC_API_URL;
+
+const savedMealsMock = [
+  { id: 1, name: "Spaghetti Bolognese" },
   { id: 2, name: "Chicken Salad" },
-  { id: 3, name: "Pasta Primavera" },
+  { id: 3, name: "Vegetable Stir Fry" },
 ];
 
 export default function LogMealPage() {
   const [mealName, setMealName] = useState("");
   const [selectedMeal, setSelectedMeal] = useState(null);
+  const [savedMeals, setSavedMeals] = useState(savedMealsMock);
   const router = useRouter();
+  const username = typeof window !== "undefined" ? localStorage.getItem("username") : "";
+
+  useEffect(() => {
+    async function fetchMeals() {
+        console.log("Fetching meals for user:", username);
+        if (!username) return;
+        try {
+          const res = await fetch(`${api_url.replace(/\/$/, "")}/users/${username}/history`);
+          let data = await res.json();
+          const firstThree = data.slice(0, 3);
+          console.log(firstThree); 
+          setSavedMeals(firstThree || []);
+        } catch (err) {
+          setSavedMeals([]);
+        }
+    }
+    fetchMeals(); 
+  }, [username]); 
+
+  const handleMealNameChange = (e) => {
+    setMealName(e.target.value);
+    localStorage.setItem("mealName", e.target.value);
+  }
 
   return (
     <main
@@ -56,7 +82,7 @@ export default function LogMealPage() {
             type="text"
             placeholder="e.g. Avocado Toast"
             value={mealName}
-            onChange={e => setMealName(e.target.value)}
+            onChange={handleMealNameChange}
           />
           <button
             type="button"
